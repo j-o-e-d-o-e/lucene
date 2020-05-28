@@ -27,31 +27,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LuceneFileSearch {
-
     private Directory indexDirectory;
     private StandardAnalyzer analyzer;
 
     public LuceneFileSearch(Directory fsDirectory, StandardAnalyzer analyzer) {
-        super();
         this.indexDirectory = fsDirectory;
         this.analyzer = analyzer;
     }
 
     public void addFileToIndex(String filepath) throws IOException, URISyntaxException {
-
         Path path = Paths.get(getClass().getClassLoader().getResource(filepath).toURI());
         File file = path.toFile();
-        IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
-        IndexWriter indexWriter = new IndexWriter(indexDirectory, indexWriterConfig);
-        Document document = new Document();
-
         FileReader fileReader = new FileReader(file);
+
+        Document document = new Document();
         document.add(new TextField("contents", fileReader));
         document.add(new StringField("path", file.getPath(), Field.Store.YES));
         document.add(new StringField("filename", file.getName(), Field.Store.YES));
 
+        IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
+        IndexWriter indexWriter = new IndexWriter(indexDirectory, indexWriterConfig);
         indexWriter.addDocument(document);
-
         indexWriter.close();
     }
 
@@ -66,13 +62,10 @@ public class LuceneFileSearch {
             for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
                 documents.add(searcher.doc(scoreDoc.doc));
             }
-
             return documents;
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
         return null;
-
     }
-
 }

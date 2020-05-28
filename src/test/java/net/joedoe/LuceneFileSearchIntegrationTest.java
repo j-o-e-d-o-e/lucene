@@ -5,6 +5,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -13,15 +14,18 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class LuceneFileSearchIntegrationTest {
+    private final static String indexPath = "index";
+    private final static String dataPath = "data/file1.txt";
+    private LuceneFileSearch luceneFileSearch;
+
+    @Before
+    public void setup() throws IOException {
+        Directory directory = FSDirectory.open(Paths.get(indexPath));
+        luceneFileSearch = new LuceneFileSearch(directory, new StandardAnalyzer());
+    }
 
     @Test
-    public void givenSearchQueryWhenFetchedFileNamehenCorrect() throws IOException, URISyntaxException {
-        String indexPath = "index";
-        String dataPath = "data/file1.txt";
-
-        Directory directory = FSDirectory.open(Paths.get(indexPath));
-        LuceneFileSearch luceneFileSearch = new LuceneFileSearch(directory, new StandardAnalyzer());
-
+    public void givenSearchQueryWhenFetchedFileNameThenCorrect() throws IOException, URISyntaxException {
         luceneFileSearch.addFileToIndex(dataPath);
 
         List<Document> docs = luceneFileSearch.searchFiles("contents", "consectetur");
