@@ -7,27 +7,34 @@ import org.apache.lucene.search.*;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.BytesRef;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
 
 public class LuceneInMemorySearchIntegrationTest {
+    private InMemoryLuceneIndex inMemoryLuceneIndex;
+
+    @Before
+    public void setup(){
+        inMemoryLuceneIndex = new InMemoryLuceneIndex(new RAMDirectory(), new StandardAnalyzer());
+    }
 
     @Test
     public void givenSearchQueryWhenFetchedDocumentThenCorrect() {
-        InMemoryLuceneIndex inMemoryLuceneIndex = new InMemoryLuceneIndex(new RAMDirectory(), new StandardAnalyzer());
-        inMemoryLuceneIndex.indexDocument("Hello world", "Some hello world ");
+        inMemoryLuceneIndex.indexDocument("Hello world", "Some hello world");
 
-        List<Document> documents = inMemoryLuceneIndex.searchIndex("body", "world");
+        Document doc = inMemoryLuceneIndex.searchIndex("body", "world").get(0);
 
-        Assert.assertEquals("Hello world", documents.get(0).get("title"));
+        Assert.assertEquals("Hello world", doc.get("title"));
+        Assert.assertEquals("Some hello world", doc.get("body"));
     }
 
     @Test
     public void givenTermQueryWhenFetchedDocumentThenCorrect() {
-        InMemoryLuceneIndex inMemoryLuceneIndex = new InMemoryLuceneIndex(new RAMDirectory(), new StandardAnalyzer());
-        inMemoryLuceneIndex.indexDocument("activity", "running in track");
-        inMemoryLuceneIndex.indexDocument("activity", "Cars are running on road");
+        inMemoryLuceneIndex.indexDocument("activity", "Dogs are running");
+        inMemoryLuceneIndex.indexDocument("activity", "Cats are running");
+        inMemoryLuceneIndex.indexDocument("activity", "Ducks are swimming");
 
         Term term = new Term("body", "running");
         Query query = new TermQuery(term);
@@ -38,9 +45,9 @@ public class LuceneInMemorySearchIntegrationTest {
 
     @Test
     public void givenPrefixQueryWhenFetchedDocumentThenCorrect() {
-        InMemoryLuceneIndex inMemoryLuceneIndex = new InMemoryLuceneIndex(new RAMDirectory(), new StandardAnalyzer());
         inMemoryLuceneIndex.indexDocument("article", "Lucene introduction");
         inMemoryLuceneIndex.indexDocument("article", "Introduction to Lucene");
+        inMemoryLuceneIndex.indexDocument("article", "Another article");
 
         Term term = new Term("body", "intro");
         Query query = new PrefixQuery(term);
@@ -51,7 +58,6 @@ public class LuceneInMemorySearchIntegrationTest {
 
     @Test
     public void givenBooleanQueryWhenFetchedDocumentThenCorrect() {
-        InMemoryLuceneIndex inMemoryLuceneIndex = new InMemoryLuceneIndex(new RAMDirectory(), new StandardAnalyzer());
         inMemoryLuceneIndex.indexDocument("Destination", "Las Vegas singapore car");
         inMemoryLuceneIndex.indexDocument("Commutes in singapore", "Bus Car Bikes");
 
@@ -70,9 +76,10 @@ public class LuceneInMemorySearchIntegrationTest {
 
     @Test
     public void givenPhraseQueryWhenFetchedDocumentThenCorrect() {
-        InMemoryLuceneIndex inMemoryLuceneIndex = new InMemoryLuceneIndex(new RAMDirectory(), new StandardAnalyzer());
         inMemoryLuceneIndex.indexDocument("quotes", "A rose by any other name would smell as sweet.");
 
+        // slop is the distance in the number of words, between the terms to be matched
+        // TODO: NOT WORKING CORRECTLY
         Query query = new PhraseQuery(1, "body", new BytesRef("smell"), new BytesRef("sweet"));
         List<Document> documents = inMemoryLuceneIndex.searchIndex(query);
 
@@ -81,7 +88,6 @@ public class LuceneInMemorySearchIntegrationTest {
 
     @Test
     public void givenFuzzyQueryWhenFetchedDocumentThenCorrect() {
-        InMemoryLuceneIndex inMemoryLuceneIndex = new InMemoryLuceneIndex(new RAMDirectory(), new StandardAnalyzer());
         inMemoryLuceneIndex.indexDocument("article", "Halloween Festival");
         inMemoryLuceneIndex.indexDocument("decoration", "Decorations for Halloween");
 
@@ -94,7 +100,6 @@ public class LuceneInMemorySearchIntegrationTest {
 
     @Test
     public void givenWildCardQueryWhenFetchedDocumentThenCorrect() {
-        InMemoryLuceneIndex inMemoryLuceneIndex = new InMemoryLuceneIndex(new RAMDirectory(), new StandardAnalyzer());
         inMemoryLuceneIndex.indexDocument("article", "Lucene introduction");
         inMemoryLuceneIndex.indexDocument("article", "Introducing Lucene with Spring");
 
@@ -107,7 +112,6 @@ public class LuceneInMemorySearchIntegrationTest {
 
     @Test
     public void givenSortFieldWhenSortedThenCorrect() {
-        InMemoryLuceneIndex inMemoryLuceneIndex = new InMemoryLuceneIndex(new RAMDirectory(), new StandardAnalyzer());
         inMemoryLuceneIndex.indexDocument("Ganges", "River in India");
         inMemoryLuceneIndex.indexDocument("Mekong", "This river flows in south Asia");
         inMemoryLuceneIndex.indexDocument("Amazon", "Rain forest river");
@@ -127,17 +131,16 @@ public class LuceneInMemorySearchIntegrationTest {
 
     @Test
     public void whenDocumentDeletedThenCorrect() {
-        InMemoryLuceneIndex inMemoryLuceneIndex = new InMemoryLuceneIndex(new RAMDirectory(), new StandardAnalyzer());
         inMemoryLuceneIndex.indexDocument("Ganges", "River in India");
         inMemoryLuceneIndex.indexDocument("Mekong", "This river flows in south Asia");
 
         Term term = new Term("title", "ganges");
         inMemoryLuceneIndex.deleteDocument(term);
 
-        Query query = new TermQuery(term);
+        Term term1 = new Term("body", "river");
+        Query query = new TermQuery(term1);
 
         List<Document> documents = inMemoryLuceneIndex.searchIndex(query);
-        Assert.assertEquals(0, documents.size());
+        Assert.assertEquals(1, documents.size());
     }
-
 }

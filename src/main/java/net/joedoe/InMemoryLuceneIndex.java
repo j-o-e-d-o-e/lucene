@@ -21,7 +21,6 @@ public class InMemoryLuceneIndex {
     private Analyzer analyzer;
 
     public InMemoryLuceneIndex(Directory memoryIndex, Analyzer analyzer) {
-        super();
         this.memoryIndex = memoryIndex;
         this.analyzer = analyzer;
     }
@@ -29,13 +28,13 @@ public class InMemoryLuceneIndex {
     public void indexDocument(String title, String body) {
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
         try {
-            IndexWriter writter = new IndexWriter(memoryIndex, indexWriterConfig);
+            IndexWriter writer = new IndexWriter(memoryIndex, indexWriterConfig);
             Document document = new Document();
             document.add(new TextField("title", title, Field.Store.YES));
             document.add(new TextField("body", body, Field.Store.YES));
             document.add(new SortedDocValuesField("title", new BytesRef(title)));
-            writter.addDocument(document);
-            writter.close();
+            writer.addDocument(document);
+            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -43,63 +42,59 @@ public class InMemoryLuceneIndex {
 
     public List<Document> searchIndex(String inField, String queryString) {
         try {
+            IndexSearcher searcher = getIndexSearcher();
             Query query = new QueryParser(inField, analyzer).parse(queryString);
-            IndexReader indexReader = DirectoryReader.open(memoryIndex);
-            IndexSearcher searcher = new IndexSearcher(indexReader);
             TopDocs topDocs = searcher.search(query, 10);
-            List<Document> documents = new ArrayList<>();
-            for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
-                documents.add(searcher.doc(scoreDoc.doc));
-            }
-            return documents;
+            return getDocuments(searcher, topDocs);
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
         return null;
-
-    }
-
-    public void deleteDocument(Term term) {
-        try {
-            IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
-            IndexWriter writter = new IndexWriter(memoryIndex, indexWriterConfig);
-            writter.deleteDocuments(term);
-            writter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public List<Document> searchIndex(Query query) {
         try {
-            IndexReader indexReader = DirectoryReader.open(memoryIndex);
-            IndexSearcher searcher = new IndexSearcher(indexReader);
+            IndexSearcher searcher = getIndexSearcher();
             TopDocs topDocs = searcher.search(query, 10);
-            List<Document> documents = new ArrayList<>();
-            for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
-                documents.add(searcher.doc(scoreDoc.doc));
-            }
-            return documents;
+            return getDocuments(searcher, topDocs);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
-
     }
 
     public List<Document> searchIndex(Query query, Sort sort) {
         try {
-            IndexReader indexReader = DirectoryReader.open(memoryIndex);
-            IndexSearcher searcher = new IndexSearcher(indexReader);
+            IndexSearcher searcher = getIndexSearcher();
             TopDocs topDocs = searcher.search(query, 10, sort);
-            List<Document> documents = new ArrayList<>();
-            for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
-                documents.add(searcher.doc(scoreDoc.doc));
-            }
-            return documents;
+            return getDocuments(searcher, topDocs);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private IndexSearcher getIndexSearcher() throws IOException {
+        IndexReader indexReader = DirectoryReader.open(memoryIndex);
+        return new IndexSearcher(indexReader);
+    }
+
+    private List<Document> getDocuments(IndexSearcher searcher, TopDocs topDocs) throws IOException {
+        List<Document> documents = new ArrayList<>();
+        for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
+            documents.add(searcher.doc(scoreDoc.doc));
+        }
+        return documents;
+    }
+
+    public void deleteDocument(Term term) {
+        IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
+        try {
+            IndexWriter writer = new IndexWriter(memoryIndex, indexWriterConfig);
+            writer.deleteDocuments(term);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
