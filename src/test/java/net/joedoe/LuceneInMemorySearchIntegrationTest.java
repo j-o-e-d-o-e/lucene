@@ -67,11 +67,12 @@ public class LuceneInMemorySearchIntegrationTest {
         TermQuery query1 = new TermQuery(term1);
         TermQuery query2 = new TermQuery(term2);
 
-        BooleanQuery booleanQuery = new BooleanQuery.Builder().add(query1, BooleanClause.Occur.MUST)
+        BooleanQuery booleanQuery = new BooleanQuery.Builder().add(query1, BooleanClause.Occur.MUST_NOT)
                 .add(query2, BooleanClause.Occur.MUST).build();
 
         List<Document> documents = inMemoryLuceneIndex.searchIndex(booleanQuery);
         Assert.assertEquals(1, documents.size());
+        Assert.assertEquals("Commutes in singapore", documents.get(0).get("title"));
     }
 
     @Test

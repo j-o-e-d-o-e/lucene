@@ -8,19 +8,17 @@ import org.apache.lucene.search.TopDocs;
 
 import java.io.IOException;
 
-import static net.joedoe.app.SearchFactory.*;
-import static net.joedoe.app.SearchFactory.Type.NORMAL;
+import static net.joedoe.app.SearchFactory.Type;
+import static net.joedoe.app.SearchFactory.search;
 
 public class Main {
-    // directory
+    // directory paths
     static final Lang language = Lang.JAVA;
-    static final String dataDir = language.dataDir;
-    static final String indexDir = language.getIndexDir();
     // search params
-    static final Type type = NORMAL;
-    static final String field = Info.FILE_NAME;
-    static final String text1 = "hash";
-    static final String text2 = "string.txt";
+    static final Type type = Type.FUZZY;
+    static final String field = Info.CONTENTS;
+    static final String text1 = "rand";
+    static final String text2 = "lists";
     static final boolean sort = false;
 
     public static void main(String[] args) {
@@ -34,9 +32,9 @@ public class Main {
 
     @SuppressWarnings("unused")
     private static void createIndex() throws IOException {
-        Indexer indexer = new Indexer(indexDir, new StandardAnalyzer());
+        Indexer indexer = new Indexer(language.getIndexDir(), new StandardAnalyzer());
         long startTime = System.currentTimeMillis();
-        int numIndexed = indexer.indexDocuments(dataDir);
+        int numIndexed = indexer.indexDocuments(language.dataDir);
         long endTime = System.currentTimeMillis();
         indexer.close();
         System.out.println(numIndexed + " files indexed. Time: " + (endTime - startTime) + " ms");
@@ -44,7 +42,7 @@ public class Main {
 
     @SuppressWarnings("SameParameterValue")
     private static void searchIndex() throws Exception {
-        Searcher searcher = new Searcher(indexDir);
+        Searcher searcher = new Searcher(language.getIndexDir());
         long startTime = System.currentTimeMillis();
         TopDocs docs = search(searcher, type, field, text1, text2, sort);
         long endTime = System.currentTimeMillis();
