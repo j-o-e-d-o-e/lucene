@@ -15,10 +15,10 @@ public class Main {
     // directory paths
     static final Lang language = Lang.JAVA;
     // search params
-    static final Type type = Type.FUZZY;
+    static final Type type = Type.BOOL;
     static final String field = Info.CONTENTS;
-    static final String text1 = "rand";
-    static final String text2 = "lists";
+    static final String text1 = "date";
+    static final String text2 = "local";
     static final boolean sort = false;
 
     public static void main(String[] args) {
