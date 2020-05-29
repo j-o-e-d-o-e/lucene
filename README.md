@@ -16,7 +16,7 @@
 
 ### BOOL
 - to execute complex searches, combining two or more different types of queries
-- e.g. field=Info.FILE_NAME, text1=hash, text2=sets
+- e.g. field=Info.CONTENTS, text1=hash, text2=set
 
 ### PHRASE
 - To search a sequence of texts in a document

@@ -16,10 +16,10 @@ public class SearchFactory {
         Term term;
         switch (type) {
             case ANALYZER:
-                 query = new QueryParser(field, new StandardAnalyzer()).parse(text1);
+                query = new QueryParser(field, new StandardAnalyzer()).parse(text1);
                 break;
             case TERM:
-                 term = new Term(field, text1);
+                term = new Term(field, text1);
                 query = new TermQuery(term);
                 break;
             case PREFIX:
@@ -27,16 +27,16 @@ public class SearchFactory {
                 query = new PrefixQuery(term);
                 break;
             case BOOL:
-               WildcardQuery query1 = new WildcardQuery(new Term(field, "*" + text1 + "*"));
-                WildcardQuery query2 = new WildcardQuery(new Term(field, "*" + text2 + "*"));
+                TermQuery query1 = new TermQuery(new Term(field, text1));
+                TermQuery query2 = new TermQuery(new Term(field, text2));
                 query = new BooleanQuery.Builder().add(query1, BooleanClause.Occur.MUST)
-                        .add(query2, BooleanClause.Occur.SHOULD).build();
+                        .add(query2, BooleanClause.Occur.MUST_NOT).build();
                 break;
             case PHRASE:
                 query = new PhraseQuery(1, field, new BytesRef(text1), new BytesRef(text2));
                 break;
             case FUZZY:
-               term = new Term(field, text1);
+                term = new Term(field, text1);
                 query = new FuzzyQuery(term);
                 break;
             case WILDCARD:
@@ -44,7 +44,6 @@ public class SearchFactory {
                 term = new Term(field, "*" + text1 + "*");
                 query = new WildcardQuery(term);
         }
-        // To sort the search results documents based on certain fields
         return sort ? searcher.searchAndSort(query, field) : searcher.search(query);
     }
 }
