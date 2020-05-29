@@ -8,38 +8,38 @@ import org.apache.lucene.util.BytesRef;
 
 public class SearchFactory {
     enum Type {
-        normal, term, prefix, bool, phrase, fuzzy, wildcard
+        NORMAL, TERM, PREFIX, BOOL, PHRASE, FUZZY, WILDCARD
     }
 
     public static TopDocs search(Searcher searcher,Type type,  String field, String text1, String text2, boolean sort) throws Exception {
         Query query;
         Term term;
         switch (type) {
-            case normal:
+            case NORMAL:
                 query = new QueryParser(field, new StandardAnalyzer()).parse(text1);
                 break;
-            case term:
+            case TERM:
                 term = new Term(field, text1);
                 query = new TermQuery(term);
                 break;
-            case prefix:
+            case PREFIX:
                 term = new Term(field, text1);
                 query = new PrefixQuery(term);
                 break;
-            case bool:
+            case BOOL:
                 TermQuery query1 = new TermQuery(new Term(field, text1));
                 TermQuery query2 = new TermQuery(new Term(field, text2));
                 query = new BooleanQuery.Builder().add(query1, BooleanClause.Occur.MUST)
                         .add(query2, BooleanClause.Occur.MUST).build();
                 break;
-            case phrase:
+            case PHRASE:
                 query = new PhraseQuery(1, field, new BytesRef(text1), new BytesRef(text2));
                 break;
-            case fuzzy:
+            case FUZZY:
                 term = new Term(field, text1);
                 query = new FuzzyQuery(term);
                 break;
-            case wildcard:
+            case WILDCARD:
             default:
                 term = new Term(field, text1);
                 query = new WildcardQuery(term);

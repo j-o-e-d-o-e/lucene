@@ -8,15 +8,20 @@ import org.apache.lucene.search.TopDocs;
 
 import java.io.IOException;
 
-import static net.joedoe.app.SearchFactory.Type.normal;
+import static net.joedoe.app.SearchFactory.*;
+import static net.joedoe.app.SearchFactory.Type.NORMAL;
 
 public class Main {
+    // directory
     static final Lang language = Lang.JAVA;
     static final String dataDir = language.dataDir;
     static final String indexDir = language.getIndexDir();
+    // search params
+    static final Type type = NORMAL;
     static final String field = Info.FILE_NAME;
-    static final String text1 = "strings.txt";
+    static final String text1 = "hash";
     static final String text2 = "string.txt";
+    static final boolean sort = false;
 
     public static void main(String[] args) {
         try {
@@ -41,7 +46,7 @@ public class Main {
     private static void searchIndex() throws Exception {
         Searcher searcher = new Searcher(indexDir);
         long startTime = System.currentTimeMillis();
-        TopDocs docs = SearchFactory.search(searcher, normal, field, text1, text2, false);
+        TopDocs docs = search(searcher, type, field, text1, text2, sort);
         long endTime = System.currentTimeMillis();
         printSearchResults(startTime, docs, endTime, searcher);
     }
