@@ -14,13 +14,13 @@ import static net.joedoe.app.QueryFactory.QueryType;
 
 public class Main {
     // directory paths
-    static final Lang language = Lang.JAVA;
+    private static final Lang language = Lang.PYTHON;
     // query params
-    static final QueryType QUERY_TYPE = QueryType.WILDCARD;
-    static final String field = Info.FILE_NAME;
-    static final String text1 = "sub";
-    static final String text2 = "map";
-    static final boolean sort = false; // only for Info.FILE_NAME && Info.FILE_PATH
+    private static final QueryType QUERY_TYPE = QueryType.WILDCARD;
+    private static final String field = Info.FILE_NAME;
+    private static final String text1 = "string";
+    private static final String text2 = "warning";
+    private static final boolean sort = true; // false for Info.CONTENTS
 
     public static void main(String[] args) {
         try {

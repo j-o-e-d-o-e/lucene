@@ -1,22 +1,25 @@
 package net.joedoe.app;
 
+import java.util.Properties;
+
 public class Info {
     public static final String CONTENTS = "contents";
     public static final String FILE_NAME = "filename";
     public static final String FILE_PATH = "filepath";
     public static final int MAX_SEARCH = 10;
 
-    private static final String dataDirBase = "/media/joe/E/programming";
-    private static final String indexDirBase = "src/main/resources/index/";
+    private static Properties prop = Utils.getProperties();
+    private static final String dataDirBase = prop.getProperty("dataDirBase");
+    private static final String indexDirBase = prop.getProperty("indexDirBase");
 
     @SuppressWarnings("unused")
     public enum Lang {
-        PYTHON("/py/code_library_py/library"),
-        JAVA("/java/code_library_java/library"),
-        SPRING("/java/code_library_spring/library"),
-        CSHARP("/c#/code_library_c#/library"),
-        CPP("/cpp/code_library_c++/library"),
-        DOCKER("/docker/code_library_docker/library");
+        PYTHON(prop.getProperty("python")),
+        JAVA(prop.getProperty("java")),
+        SPRING(prop.getProperty("spring")),
+        CSHARP(prop.getProperty("csharp")),
+        CPP(prop.getProperty("cpp")),
+        DOCKER(prop.getProperty("docker"));
 
         private final String dataDir;
 

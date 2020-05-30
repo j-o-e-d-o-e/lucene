@@ -1,6 +1,10 @@
-# baeldung
+# lucene
+
+Demo for indexing/searching .txt-files with Apache Lucene.
 
 ## Query types
+
+As defined in `/app/QueryFactory`.
 
 ### ANALYZER
 - Analyzers are used to split the text into chunks, and then filter out stop words, like ‘a', ‘am', ‘is'
@@ -19,7 +23,7 @@
 - e.g. field=Info.CONTENTS, text1=hash, text2=set
 
 ### PHRASE
-- To search a sequence of texts in a document
+- To search a sequence of texts in a document in consecutive order
 - e.g. field=Info.CONTENTS, text1=array, text2=lists
 
 ### FUZZY
