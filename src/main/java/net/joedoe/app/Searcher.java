@@ -20,7 +20,7 @@ public class Searcher {
         searcher = new IndexSearcher(indexReader);
     }
 
-    public TopDocs search(Query query) throws Exception {
+    public TopDocs search(Query query) throws IOException {
         return searcher.search(query, Info.MAX_SEARCH);
     }
 

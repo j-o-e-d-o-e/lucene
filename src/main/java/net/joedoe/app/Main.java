@@ -3,6 +3,7 @@ package net.joedoe.app;
 import net.joedoe.app.Info.Lang;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
@@ -25,7 +26,7 @@ public class Main {
         try {
 //            createIndex();
             searchIndex();
-        } catch (Exception e) {
+        } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
     }
@@ -34,13 +35,13 @@ public class Main {
     private static void createIndex() throws IOException {
         Indexer indexer = new Indexer(language.getIndexDir(), new StandardAnalyzer());
         long startTime = System.currentTimeMillis();
-        int numIndexed = indexer.indexDocuments(language.dataDir);
+        int numIndexed = indexer.indexDocuments(language.getDataDir());
         long endTime = System.currentTimeMillis();
         indexer.close();
         System.out.println(numIndexed + " files indexed. Time: " + (endTime - startTime) + " ms");
     }
 
-    private static void searchIndex() throws Exception {
+    private static void searchIndex() throws IOException, ParseException {
         Searcher searcher = new Searcher(language.getIndexDir());
         long startTime = System.currentTimeMillis();
         Query query = QueryFactory.getQuery(QUERY_TYPE, field, text1, text2);

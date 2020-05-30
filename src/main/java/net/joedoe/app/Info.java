@@ -18,10 +18,14 @@ public class Info {
         CPP("/cpp/code_library_c++/library"),
         DOCKER("/docker/code_library_docker/library");
 
-        public final String dataDir;
+        private final String dataDir;
 
         Lang(String dataDir) {
             this.dataDir = dataDirBase + dataDir;
+        }
+
+        public String getDataDir() {
+            return dataDir;
         }
 
         public String getIndexDir() {

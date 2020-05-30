@@ -2,6 +2,7 @@ package net.joedoe.app;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.util.BytesRef;
@@ -11,20 +12,17 @@ public class QueryFactory {
         ANALYZER, TERM, PREFIX, BOOL, PHRASE, FUZZY, WILDCARD
     }
 
-    public static Query getQuery(QueryType queryType, String field, String text1, String text2) throws Exception {
+    public static Query getQuery(QueryType queryType, String field, String text1, String text2) throws ParseException {
         Query query;
-        Term term;
         switch (queryType) {
             case ANALYZER:
                 query = new QueryParser(field, new StandardAnalyzer()).parse(text1);
                 break;
             case TERM:
-                term = new Term(field, text1);
-                query = new TermQuery(term);
+                query = new TermQuery(new Term(field, text1));
                 break;
             case PREFIX:
-                term = new Term(field, text1);
-                query = new PrefixQuery(term);
+                query = new PrefixQuery(new Term(field, text1));
                 break;
             case BOOL:
                 TermQuery query1 = new TermQuery(new Term(field, text1));
@@ -36,13 +34,11 @@ public class QueryFactory {
                 query = new PhraseQuery(1, field, new BytesRef(text1), new BytesRef(text2));
                 break;
             case FUZZY:
-                term = new Term(field, text1);
-                query = new FuzzyQuery(term);
+                query = new FuzzyQuery(new Term(field, text1));
                 break;
             case WILDCARD:
             default:
-                term = new Term(field, "*" + text1 + "*");
-                query = new WildcardQuery(term);
+                query = new WildcardQuery(new Term(field, "*" + text1 + "*"));
         }
         return query;
     }
