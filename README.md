@@ -34,6 +34,13 @@ As defined in `/app/QueryFactory`.
 - Wildcards “*” or “?” can be used
 - e.g. field=Info.FILE_NAME, text1=sub
 
+## Text collections
+
+For demo purposes.
+
+- [code_library_java](https://github.com/j-o-e-d-o-e/code_library_java)
+- [code_library_spring](https://github.com/j-o-e-d-o-e/code_library_spring)
+
 ## g/re/p
 - **g**lobally search a **r**egular **e**xpression and **p**rint
 - `grep '<search_term>' <file_name>`
