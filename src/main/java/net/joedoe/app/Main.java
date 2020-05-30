@@ -16,11 +16,11 @@ public class Main {
     // directory paths
     static final Lang language = Lang.JAVA;
     // query params
-    static final QueryType QUERY_TYPE = QueryType.ANALYZER;
+    static final QueryType QUERY_TYPE = QueryType.WILDCARD;
     static final String field = Info.FILE_NAME;
-    static final String text1 = "array";
+    static final String text1 = "sub";
     static final String text2 = "map";
-    static final boolean sort = false;
+    static final boolean sort = false; // only for Info.FILE_NAME && Info.FILE_PATH
 
     public static void main(String[] args) {
         try {
@@ -45,16 +45,18 @@ public class Main {
         Searcher searcher = new Searcher(language.getIndexDir());
         long startTime = System.currentTimeMillis();
         Query query = QueryFactory.getQuery(QUERY_TYPE, field, text1, text2);
-        TopDocs docs = sort ? searcher.searchAndSort(query, field) : searcher.search(query);
+        TopDocs docs = sort && (field.equals(Info.FILE_NAME) || field.equals(Info.FILE_PATH)) ?
+                searcher.searchAndSort(query, field) : searcher.search(query);
         long endTime = System.currentTimeMillis();
-        printSearchResults(startTime, docs, endTime, searcher);
+        System.out.println(docs.totalHits + " documents found. Time: " + (endTime - startTime) + " ms");
+        printTopDocs(docs, searcher);
     }
 
-    private static void printSearchResults(long startTime, TopDocs docs, long endTime, Searcher searcher) throws IOException {
-        System.out.println(docs.totalHits + " documents found. Time: " + (endTime - startTime) + " ms");
+    private static void printTopDocs(TopDocs docs, Searcher searcher) throws IOException {
         for (ScoreDoc scoreDoc : docs.scoreDocs) {
-            Document doc = searcher.getDocument(scoreDoc);
-            System.out.print("Score: " + scoreDoc.score + " ");
+            if (!sort)
+                System.out.print("Score: " + scoreDoc.score + " ");
+            Document doc = searcher.doc(scoreDoc.doc);
             System.out.println("File: " + doc.get(Info.FILE_NAME));
         }
     }
