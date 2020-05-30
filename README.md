@@ -1,6 +1,6 @@
 # baeldung
 
-## Search types
+## Query types
 
 ### ANALYZER
 - Analyzers are used to split the text into chunks, and then filter out stop words, like ‘a', ‘am', ‘is'
@@ -38,7 +38,7 @@
     - case-insensitive, e.g. `grep -i 'linux' input.txt`
     - whole-word, e.g. `grep -w 'is' input.txt`
 
-### Materials
+## Materials
 
 - [Tutorial website](https://www.baeldung.com/lucene)
 - [grep overview](https://www.baeldung.com/linux/common-text-search)

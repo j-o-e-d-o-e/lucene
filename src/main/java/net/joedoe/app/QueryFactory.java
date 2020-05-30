@@ -6,15 +6,15 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.util.BytesRef;
 
-public class SearchFactory {
-    enum Type {
+public class QueryFactory {
+    enum QueryType {
         ANALYZER, TERM, PREFIX, BOOL, PHRASE, FUZZY, WILDCARD
     }
 
-    public static TopDocs search(Searcher searcher, Type type, String field, String text1, String text2, boolean sort) throws Exception {
+    public static Query getQuery(QueryType queryType, String field, String text1, String text2) throws Exception {
         Query query;
         Term term;
-        switch (type) {
+        switch (queryType) {
             case ANALYZER:
                 query = new QueryParser(field, new StandardAnalyzer()).parse(text1);
                 break;
@@ -44,6 +44,6 @@ public class SearchFactory {
                 term = new Term(field, "*" + text1 + "*");
                 query = new WildcardQuery(term);
         }
-        return sort ? searcher.searchAndSort(query, field) : searcher.search(query);
+        return query;
     }
 }

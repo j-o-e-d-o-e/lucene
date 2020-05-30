@@ -7,7 +7,7 @@ public class Info {
     public static final int MAX_SEARCH = 10;
 
     private static final String dataDirBase = "/media/joe/E/programming";
-    public static final String indexDirBase = "src/main/resources/index/";
+    private static final String indexDirBase = "src/main/resources/index/";
 
     @SuppressWarnings("unused")
     public enum Lang {

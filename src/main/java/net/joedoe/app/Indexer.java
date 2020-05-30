@@ -45,7 +45,6 @@ public class Indexer {
     @SuppressWarnings("unused")
     public void deleteDocument(Term term) throws IOException {
         writer.deleteDocuments(term);
-        close();
     }
 
     public void close() throws IOException {

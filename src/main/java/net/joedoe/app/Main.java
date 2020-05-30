@@ -3,23 +3,23 @@ package net.joedoe.app;
 import net.joedoe.app.Info.Lang;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 
 import java.io.IOException;
 
-import static net.joedoe.app.SearchFactory.Type;
-import static net.joedoe.app.SearchFactory.search;
+import static net.joedoe.app.QueryFactory.QueryType;
 
 public class Main {
     // directory paths
     static final Lang language = Lang.JAVA;
-    // search params
-    static final Type type = Type.ANALYZER;
+    // query params
+    static final QueryType QUERY_TYPE = QueryType.ANALYZER;
     static final String field = Info.FILE_NAME;
     static final String text1 = "array";
     static final String text2 = "map";
-    static final boolean sort = true;
+    static final boolean sort = false;
 
     public static void main(String[] args) {
         try {
@@ -40,11 +40,11 @@ public class Main {
         System.out.println(numIndexed + " files indexed. Time: " + (endTime - startTime) + " ms");
     }
 
-    @SuppressWarnings("SameParameterValue")
     private static void searchIndex() throws Exception {
         Searcher searcher = new Searcher(language.getIndexDir());
         long startTime = System.currentTimeMillis();
-        TopDocs docs = search(searcher, type, field, text1, text2, sort);
+        Query query = QueryFactory.getQuery(QUERY_TYPE, field, text1, text2);
+        TopDocs docs = sort ? searcher.searchAndSort(query, field) : searcher.search(query);
         long endTime = System.currentTimeMillis();
         printSearchResults(startTime, docs, endTime, searcher);
     }
