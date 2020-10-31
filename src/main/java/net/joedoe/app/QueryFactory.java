@@ -28,7 +28,7 @@ public class QueryFactory {
                 TermQuery query1 = new TermQuery(new Term(field, text1));
                 TermQuery query2 = new TermQuery(new Term(field, text2));
                 query = new BooleanQuery.Builder().add(query1, BooleanClause.Occur.MUST)
-                        .add(query2, BooleanClause.Occur.MUST_NOT).build();
+                        .add(query2, BooleanClause.Occur.MUST).build();
                 break;
             case PHRASE:
                 query = new PhraseQuery(1, field, new BytesRef(text1), new BytesRef(text2));

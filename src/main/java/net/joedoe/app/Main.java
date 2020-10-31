@@ -18,12 +18,12 @@ public class Main {
     // query params
     private static final QueryType QUERY_TYPE = QueryType.TERM;
     private static final String field = Info.CONTENTS;
-    private static final String text1 = "java";
+    private static final String text1 = "hash";
     private static final String text2 = "maps";
-    private static final boolean sort = true; // false for Info.CONTENTS
+    private static final boolean sort = false; // false for Info.CONTENTS
 
     public static void main(String[] args) {
-        System.out.println(language.getDataDir());
+//        System.out.println(language.getDataDir());
         try {
 //            createIndex();
             searchIndex();
@@ -44,21 +44,26 @@ public class Main {
 
     private static void searchIndex() throws IOException, ParseException {
         Searcher searcher = new Searcher(language.getIndexDir());
-        long startTime = System.currentTimeMillis();
         Query query = QueryFactory.getQuery(QUERY_TYPE, field, text1, text2);
+        long startTime = System.currentTimeMillis();
         TopDocs docs = sort && (field.equals(Info.FILE_NAME) || field.equals(Info.FILE_PATH)) ?
                 searcher.searchAndSort(query, field) : searcher.search(query);
         long endTime = System.currentTimeMillis();
-        System.out.println(docs.totalHits + " documents found. Time: " + (endTime - startTime) + " ms");
-        printTopDocs(docs, searcher);
+        printSearchResults(docs, endTime - startTime, searcher);
     }
 
-    private static void printTopDocs(TopDocs docs, Searcher searcher) throws IOException {
+    private static void printSearchResults(TopDocs docs, long time, Searcher searcher) throws IOException {
+        System.out.println("Search terms: " + text1 +  ", " + text2);
+        System.out.println("Query type: " + QUERY_TYPE);
+        System.out.println(docs.totalHits + " document(s) found. Time: " + time + " ms");
+        System.out.println("Files:");
         for (ScoreDoc scoreDoc : docs.scoreDocs) {
-            if (!sort)
-                System.out.print("Score: " + scoreDoc.score + " ");
             Document doc = searcher.doc(scoreDoc.doc);
-            System.out.println("File: " + doc.get(Info.FILE_NAME));
+            System.out.print(doc.get(Info.FILE_NAME));
+            if (!sort)
+                System.out.println(" (" + scoreDoc.score + ")");
+            else
+                System.out.println();
         }
     }
 }
